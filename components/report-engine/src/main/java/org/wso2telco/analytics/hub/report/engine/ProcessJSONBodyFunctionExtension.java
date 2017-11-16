@@ -19,7 +19,9 @@
 package org.wso2telco.analytics.hub.report.engine;
 
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
 import org.wso2.siddhi.core.executor.ExpressionExecutor;
 import org.wso2.siddhi.core.executor.function.FunctionExecutor;
@@ -30,6 +32,7 @@ import org.wso2.siddhi.query.api.exception.ExecutionPlanValidationException;
 public class ProcessJSONBodyFunctionExtension extends FunctionExecutor {
 
 	private Attribute.Type returnType = Attribute.Type.OBJECT;
+    private static final Logger log = Logger.getLogger(ProcessJSONBodyFunctionExtension.class);
 
 	public Attribute.Type getReturnType() {
 		return returnType;
@@ -60,11 +63,15 @@ public class ProcessJSONBodyFunctionExtension extends FunctionExecutor {
 		String jsonBody = (String) data[0];
 		String jsonPath = (String) data[1];
 		Object value = null;
-		if(StringUtils.isNotEmpty(jsonBody)){
-			value = JsonPath.read(jsonBody,jsonPath);
+		try{
+			if(StringUtils.isNotEmpty(jsonBody)){
+				value = JsonPath.read(jsonBody,jsonPath);
+			}
+		}catch (PathNotFoundException e){
+			log.debug("Json path is not found in json body");
 		}
 		return value;
-		
+
 	}
 
 	@Override
