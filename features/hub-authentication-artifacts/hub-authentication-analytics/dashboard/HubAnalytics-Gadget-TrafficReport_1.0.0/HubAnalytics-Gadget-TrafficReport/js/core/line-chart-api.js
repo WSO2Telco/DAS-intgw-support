@@ -201,6 +201,8 @@ var getConfig, validate, isProviderRequired, draw, update;
         var conf = {};
         conf.x = "eventTimeStamp";
         conf.height = 400;
+        conf.xTitle = "Event Timestamp";
+        conf.yTitle = "Total Count";
         conf.color = _chartConfig.color;
         conf.width = 600;
         conf.xType = _chartConfig.xType;

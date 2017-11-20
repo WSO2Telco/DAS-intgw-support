@@ -1,6 +1,6 @@
 {
     "id":"HubAnalytics-Dashboard-Reporting",
-    "title":"Hub Analytics",
+    "title":"Internal Gateway Analytics",
     "description":"",
     "permissions":{
         "viewers":[
@@ -16,7 +16,7 @@
     "pages":[
         {
             "id":"traffic-report",
-            "title":"Traffic Report",
+            "title":"TRAFFIC",
             "isanon":false,
             "content":{
                 "default":{
@@ -25,7 +25,7 @@
                             "id":"HubAnalytics-Gadget-TrafficReport-0",
                             "content":{
                                 "id":"HubAnalytics-Gadget-TrafficReport",
-                                "title":"HubAnalytics-Gadget-TrafficReport",
+                                "title":"TRAFFIC",
                                 "type":"gadget",
                                 "thumbnail":"fs://gadget/HubAnalytics-Gadget-TrafficReport/thumbnail.png",
                                 "data":{
@@ -83,7 +83,7 @@
         },
         {
             "id":"transaction-report",
-            "title":"Transaction Report",
+            "title":"TRANSACTION",
             "isanon":false,
             "content":{
                 "default":{
@@ -92,7 +92,7 @@
                             "id":"HubAnalytics-Gadget-TransactionReport-0",
                             "content":{
                                 "id":"HubAnalytics-Gadget-TransactionReport",
-                                "title":"HubAnalytics-Gadget-TransactionReport",
+                                "title":"TRANSACTION",
                                 "type":"gadget",
                                 "thumbnail":"fs://gadget/HubAnalytics-Gadget-TransactionReport/thumbnail.png",
                                 "data":{
@@ -150,7 +150,7 @@
         },
         {
             "id":"customer-care-report",
-            "title":"Customer Care Report",
+            "title":"DEV SUPPORT",
             "isanon":false,
             "content":{
                 "default":{
@@ -159,7 +159,7 @@
                             "id":"HubAnalytics-Gadget-CustomerCareReport-0",
                             "content":{
                                 "id":"HubAnalytics-Gadget-CustomerCareReport",
-                                "title":"HubAnalytics-Gadget-CustomerCareReport",
+                                "title":"DEV SUPPORT",
                                 "type":"gadget",
                                 "thumbnail":"fs://gadget/HubAnalytics-Gadget-CustomerCareReport/thumbnail.png",
                                 "data":{
@@ -218,7 +218,7 @@
         },
         {
             "id":"response-time-report",
-            "title":"Response Time Report",
+            "title":"RESPONSE TIME",
             "isanon":false,
             "content":{
                 "default":{
@@ -227,7 +227,7 @@
                             "id":"HubAnalytics-Gadget-ResponseTimeReport-0",
                             "content":{
                                 "id":"HubAnalytics-Gadget-ResponseTimeReport",
-                                "title":"HubAnalytics-Gadget-ResponseTimeReport",
+                                "title":"RESPONSE TIME",
                                 "type":"gadget",
                                 "thumbnail":"fs://gadget/HubAnalytics-Gadget-ResponseTimeReport/thumbnail.png",
                                 "data":{
@@ -288,7 +288,7 @@
         {
             "id":"traffic-report",
             "ishidden":false,
-            "title":"Traffic Report",
+            "title":"TRAFFIC",
             "subordinates":[
 
             ]
@@ -296,7 +296,7 @@
         {
             "id":"transaction-report",
             "ishidden":false,
-            "title":"Transaction Report",
+            "title":"TRANSACTION",
             "subordinates":[
 
             ]
@@ -304,7 +304,7 @@
         {
             "id":"customer-care-report",
             "ishidden":false,
-            "title":"Customer Care Report",
+            "title":"DEV SUPPORT",
             "subordinates":[
 
             ]
@@ -312,7 +312,7 @@
         {
             "id":"response-time-report",
             "ishidden":false,
-            "title":"Response Time Report",
+            "title":"RESPONSE TIME",
             "subordinates":[
 
             ]

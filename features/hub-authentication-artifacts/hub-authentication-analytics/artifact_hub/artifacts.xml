@@ -11,6 +11,8 @@
         <dependency artifact="Eventstore_request" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstore_response" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventstore_hubAnalytics_processedStatistics" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+       
+
         <dependency artifact="Eventreceiver_fault" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventreceiver_request" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Eventreceiver_response" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -18,6 +20,9 @@
         <dependency artifact="Eventreceiver_hubAnalytics_responseStatistics" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Sparkscript_hubAnalytics_genericReports" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="Executionplan_hubAnalytics_genericReports" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+      
+
+      
         <dependency artifact="Sparkscript_hubAnalytics_commonReports" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
 
         <dependency artifact="HubAnalytics-Gadget-TransactionReport" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
@@ -25,6 +30,11 @@
         <dependency artifact="HubAnalytics-Gadget-CustomerCareReport" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="HubAnalytics-Gadget-TrafficReport" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
         <dependency artifact="HubAnalytics-Dashboard-Reporting" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
-                <dependency artifact="HubAnalytics-Gadget-Commons" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="HubAnalytics-Gadget-Commons" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
+        <dependency artifact="PerMinSummary-Eventstore-depAnalytics" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="PerMinSummary-Eventstream-depAnalytics" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+        <dependency artifact="PerMinSummary-ExecutionPlan-depAnalytics" version="1.0.0" include="true" serverRole="DataAnalyticsServer"/>
+
     </artifact>
 </artifacts>

@@ -1,0 +1,43 @@
+/* Enter a unique ExecutionPlan */
+@Plan:name('ExecutionPlan-depAnalytics-perMinSummary')
+
+/* Enter a unique description for ExecutionPlan */
+-- @Plan:description('ExecutionPlan')
+
+/* define streams/tables and write queries here ... */
+
+
+@Import('org.wso2telco.analytics.hub.stream.processedStatistics:1.0.0')
+define stream processedevnts (api string, resourcePath string, method string, responseTime long, serviceTime long, serviceProvider string, apiPublisher string, applicationName string, requestId string, operatorId string, responseCode string, isSuccess bool, msisdn string, direction string, jsonBody string, serviceProviderId string, spUserId string, spConsumerKey string, errorMessageId string, errorText string, responseTimeRange string, year int, month int, day int, hour int, operatorName string, apiPublisherID string, apiID string, department string, applicationId string);
+
+@Export('wso2telco.dep.analytics.perMinProcessedStatistics:1.0.0')
+define stream minsummaryReal (api string, responseTime long , serviceProvider string, apiPublisher string, applicationName string, operatorId string, isSuccess bool, msisdn string, direction string, totalCount long, serviceProviderId string, errorMessageId string, responseTimeRange string, year int, month int, day int, hour int, min int, operatorName string, apiPublisherID string, apiID string, department string, applicationId string);
+
+
+from processedevnts
+select 
+
+api, responseTime , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction, serviceProviderId , errorMessageId, responseTimeRange , year , month , day , 
+hour, time:extract(responseTime, 'minute') as min, operatorName , apiPublisherID , apiID , department , applicationId 
+
+
+
+insert into processedevntsTemp;
+
+
+@info('Query01')
+from processedevntsTemp #window.cron('0 0/1 * 1/1 * ? *')
+select api, max(responseTime) as responseTime , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction , cast(count(api),'long') as totalCount , serviceProviderId , errorMessageId ,responseTimeRange , year , month , day , hour ,  min , operatorName , apiPublisherID , apiID , department , applicationId 
+group by api , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction, serviceProviderId , errorMessageId, responseTimeRange , year , month , day , hour, min ,operatorName , apiPublisherID , apiID , department , applicationId 
+insert into perSecondRequestsTemp;
+
+
+from perSecondRequestsTemp#window.timeBatch(5 sec)
+
+select api, max(responseTime) as responseTime , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction , cast(count(api),'long') as totalCount , serviceProviderId , errorMessageId ,responseTimeRange , year , month , day , hour ,  min , operatorName , apiPublisherID , apiID , department , applicationId 
+group by api , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction, serviceProviderId , errorMessageId, responseTimeRange , year , month , day , hour, min ,operatorName , apiPublisherID , apiID , department , applicationId 
+insert into minsummaryReal;
+
+from minsummaryReal
+#log('----------------nuwan  ----------04--------')
+insert into perSecondRequestsTemp4;

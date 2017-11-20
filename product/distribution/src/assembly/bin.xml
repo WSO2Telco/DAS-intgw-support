@@ -43,6 +43,9 @@
                 <exclude>**/registry.xml</exclude>
                 <exclude>**/repository/conf/security/cipher-text.properties</exclude>
                 <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
+
+                <exclude>**/repository/conf/datasources/master-datasources.xml</exclude>
+
             </excludes>
         </fileSet>
         <fileSet>
@@ -311,7 +314,7 @@
         <!-- replace wso2 logo with telco logo-->
         <fileSet>
             <directory>
-                customize/das-header-logo/
+                wso2telco/das-header-logo/
             </directory>
             <outputDirectory>
                 ${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/portal/libs/theme-wso2_1.0/images/
@@ -320,7 +323,7 @@
 
         <fileSet>
             <directory>
-                customize/das-footer/
+                wso2telco/das-footer/
             </directory>
             <outputDirectory>
                 ${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/portal/theme/templates/includes
@@ -329,7 +332,7 @@
         <!-- replace dashboard.jag to remove pdf download option-->
         <fileSet>
             <directory>
-                customize/dashboard
+                wso2telco/dashboard
             </directory>
             <outputDirectory>
                 ${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/portal/theme/templates/
@@ -709,6 +712,26 @@
         </file>
 
         <!-- END - default input/output adaptor configurations -->
+
+        <!-- Analytics conf files -->
+        <file>
+            <source>
+                wso2telco/conf/user-mgt.xml
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
+
+        <!-- Master datasources -->
+        <file>
+            <source>
+                wso2telco/conf/datasources/master-datasources.xml
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/datasources</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
+        </file>
 
         <!-- Analytics datasources -->
         <file>
@@ -1171,7 +1194,7 @@
         <!--wso2 telco logo -->
         <file>
             <source>
-                customize/wso2telco_logo/logo.png
+                wso2telco/wso2telco_logo/logo.png
             </source>
             <outputDirectory>
                 ${pom.artifactId}-${pom.version}/repository/deployment/server/jaggeryapps/portal/theme/images/

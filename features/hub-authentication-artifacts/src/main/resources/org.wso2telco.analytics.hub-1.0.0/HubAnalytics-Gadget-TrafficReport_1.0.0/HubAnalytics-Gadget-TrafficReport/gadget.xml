@@ -21,7 +21,7 @@
             
             <!-- chart specific css -->
             
-            <link href="css/dataTables.bootstrap.cs" rel="stylesheet" type="text/css">
+            <link href="css/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
             <link rel="stylesheet" type="text/css" href="css/json.human.css"/> 
 
             <!-- jQuery -->

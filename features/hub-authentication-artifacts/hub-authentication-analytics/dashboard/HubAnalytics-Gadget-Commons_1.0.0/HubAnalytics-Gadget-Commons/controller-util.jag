@@ -168,4 +168,31 @@ function isMultiValue(data) {
     }
     return false;
 }
+
+function getFileAppend(data) {
+	var fileAppend="";
+    if (data!=null){
+
+		if (data.operatorf.trim() != "All Operator" && data.operatorf !=undefined ) {
+			fileAppend+= data.operatorf;
+		}
+
+		if (data.spf.trim() !="All Service provider" && data.spf !=undefined && data.spf.trim() !="All Service Provider") {
+			fileAppend += data.spf;
+		}
+
+		if (data.applicationf.trim() != "All Application" && data.applicationf != undefined ) {
+			fileAppend+= data.applicationf;
+		}
+
+		if (data.apif.trim() != "All Api" && data.apif != undefined ) {
+			fileAppend +=  data.apif;
+		}
+
+        fileAppend += data.dateStartf;
+        //fileAppend += "-"
+        fileAppend += data.dateEndf;
+	}
+	return fileAppend;
+};
 %>

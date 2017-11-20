@@ -38,15 +38,12 @@
     if (action === 'getSchema') {
         print(providerAPI.getSchema(providerConf));
         return;
-    } else if(action === 'getData'){
+    } else if (action === 'getData') {
         providerConf.query = "";
         //Check logged in user role and decide which operators to load
         var all = true;
         var currentOperator;
         var user = session.get('user');
-
-        log.info("user"+ stringify(user));
-
 
         var userRealmService = carbon.server.osgiService('org.wso2.carbon.user.api.UserRealmService');
         var tenantId = userRealmService.getTenantManager().getTenantId(user.domain);
@@ -54,88 +51,90 @@
         var userStore = userRealm.getUserStoreManager();
         var department = userStore.getUserClaimValue(user.username, 'http://wso2.org/claims/department', null);
 
-        for (var i =0; i < user.roles.length; i++) {
+        for (var i = 0; i < user.roles.length; i++) {
             if (user.roles[i] == "admin" || user.roles[i] == "internal-gateway-admin") {
                 role = "admin";
                 break;
-            } else if(user.roles[i] == "business-unit-viewer"){
+            } else if (user.roles[i] == "business-unit-viewer") {
                 role = "viewer";
-            } else if(user.roles[i] == "Internal/subscriber" && role != "viewer"){
+            } else if (user.roles[i] == "Internal/subscriber" && role != "viewer") {
                 role = "serviceProvider";
-                serviceProvider = user.username+"@"+user.domain;
+                serviceProvider = user.username + "@" + user.domain;
             }
         }
 
         if (providerConf[PROVIDER_NAME] == "batch") {
 
-                    var timeRangeUtil = Packages.org.wso2.analytics.shared.util.time.TimeRangeUtils;
-                    var timeUnit = timeRangeUtil.getSuitableTimeRangeUnit(data.dateStart, data.dateEnd);
-                    timeUnit = (( timeUnit == 'MINUTE') || ( timeUnit == 'SECOND'))?'HOUR':timeUnit;
-                    var tableName = providerConf.tableName + timeUnit;
-                    providerConf.query += "eventTimeStamp:["+data.dateStart+" TO "+data.dateEnd+"]";
+            var timeRangeUtil = Packages.org.wso2.analytics.shared.util.time.TimeRangeUtils;
+            var timeUnit = timeRangeUtil.getSuitableTimeRangeUnit(data.dateStart, data.dateEnd);
+            timeUnit = (( timeUnit == 'MINUTE') || ( timeUnit == 'SECOND')) ? 'HOUR' : timeUnit;
+            var tableName = providerConf.tableName + timeUnit;
+            providerConf.query += "eventTimeStamp:[" + data.dateStart + " TO " + data.dateEnd + "]";
 
-                    if (data.operator != "0" && data.operator != undefined) {
-                           providerConf.query +=  " AND operatorId:"+ data.operator;
-                    }
-                    if (data.serviceProvider != "0" && data.serviceProvider != undefined) {
-                           providerConf.query +=  " AND serviceProviderId:"+ "\""+ data.serviceProvider+ "\"";
-                    }
-                    if (data.applicationName != "0" && data.applicationName != undefined) {
-                        providerConf.query +=  " AND applicationId:"+ data.applicationName;
-                    }
-                    if (data.api != "0" && data.api != undefined) {
-                        providerConf.query +=  " AND apiID:"+ data.api;
-                    }
-                    providerConf.tableName = tableName;
+            if (data.operator != "0" && data.operator != undefined) {
+                providerConf.query += " AND operatorId:" + data.operator;
+            }
+            if (data.serviceProvider != "0" && data.serviceProvider != undefined) {
+                providerConf.query += " AND serviceProviderId:" + "\"" + data.serviceProvider + "\"";
+            }
+            if (data.applicationName != "0" && data.applicationName != undefined) {
+                providerConf.query += " AND applicationId:" + data.applicationName;
+            }
+            if (data.api != "0" && data.api != undefined) {
+                providerConf.query += " AND apiID:" + data.api;
+            }
+            providerConf.tableName = tableName;
 
         } else if (providerConf[PROVIDER_NAME] == "operator") {
-                   if (data.operator != "0" && data.operator != "(0)" && data.operator != undefined) {
-                              providerConf.query +=  "operatorId:"+ data.operator;
-                              all = false;
-                   }
-        }else if(providerConf[PROVIDER_NAME] == "sp") {
-                    if(data.serviceProvider != "0" && data.serviceProvider != "(0)" && data.operator != undefined){
-                            providerConf.query +=  "serviceProviderId:"+ data.serviceProvider;
-                            all = false;
-                    }
+            if (data.operator != "0" && data.operator != "(0)" && data.operator != undefined) {
+                providerConf.query += "operatorId:" + data.operator;
+                all = false;
+            }
+        } else if (providerConf[PROVIDER_NAME] == "sp") {
+            if (data.serviceProvider != "0" && data.serviceProvider != "(0)" && data.operator != undefined) {
+                providerConf.query += "serviceProviderId:" + data.serviceProvider;
+                all = false;
+            }
         }
-        else if(providerConf[PROVIDER_NAME] == "app") {
-                    if(data.applicationId!="0" && data.applicationId!="(0)" && data.operator != undefined){
-                            providerConf.query +=  "applicationId:"+ data.applicationId;
-                            all = false;
-                    }
+        else if (providerConf[PROVIDER_NAME] == "app") {
+            if (data.applicationId != "()" && data.applicationId != "0" && data.applicationId != "(0)" && data.operator != undefined) {
+                providerConf.query += "applicationId:" + data.applicationId;
+                all = false;
+            } else if (data.applicationId == "(0)" && data.operator != undefined && data.serviceProvider != "(0)" && data.serviceProvider != "0") {
+                providerConf.query += "serviceProviderId:" + "\"" + data.serviceProvider + "\"";
+            }
         }
 
         var andSign = '';
-        if((role != "admin" &&  all == false) || (providerConf[PROVIDER_NAME] == "batch")){
-         andSign =  ' AND ';
+        if ((role != "admin" && all == false) || (providerConf[PROVIDER_NAME] == "batch")) {
+            andSign = ' AND ';
         }
-        log.info("role => "+role+"    providerConf[PROVIDER_NAME] =>"+providerConf[PROVIDER_NAME] +"  "+(providerConf[PROVIDER_NAME] == "sp" || providerConf[PROVIDER_NAME] == "batch"));
-        if(role =="viewer" && providerConf[PROVIDER_NAME] != "batch"){
-          providerConf.tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_API_SUMMARY";
-          providerConf.query +=  andSign +' department:"'+department+'"';
-          print(providerAPI.getData(providerConf));
-          return;
-        }else if(role =="viewer" && providerConf[PROVIDER_NAME] == "batch"){
-          providerConf.query +=  andSign +' department:"'+department+'"';
-        }else if(role =="serviceProvider" && (providerConf[PROVIDER_NAME] == "operator" || providerConf[PROVIDER_NAME] == "sp")){
-                  var serviceProviderName = user.username +"@"+ user.domain;
-                  providerConf.query +=  andSign +' _serviceProvider:"'+serviceProviderName+'"';
-                  providerConf.tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_API_SUMMARY";
-                  print(providerAPI.getData(providerConf));
-                  return;
+        log.info("role => " + role + "    providerConf[PROVIDER_NAME] =>" + providerConf[PROVIDER_NAME] + "  " + (providerConf[PROVIDER_NAME] == "sp" || providerConf[PROVIDER_NAME] == "batch"));
+        if (role == "viewer" && providerConf[PROVIDER_NAME] != "batch") {
+            providerConf.tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_API_SUMMARY";
+            providerConf.query += andSign + ' department:"' + department + '"';
+            print(providerAPI.getData(providerConf));
+            return;
+        } else if (role == "viewer" && providerConf[PROVIDER_NAME] == "batch") {
+            providerConf.query += andSign + ' department:"' + department + '"';
+        } else if (role == "serviceProvider" && (providerConf[PROVIDER_NAME] == "operator" || providerConf[PROVIDER_NAME] == "sp")) {
+            var serviceProviderName = user.username + "@" + user.domain;
+            providerConf.query += andSign + ' _serviceProvider:"' + serviceProviderName + '"';
+            providerConf.tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_API_SUMMARY";
+            print(providerAPI.getData(providerConf));
+            return;
 
-        }else if(role =="serviceProvider" && providerConf[PROVIDER_NAME] == "batch"){
-           var serviceProviderName = user.username +"@"+ user.domain;
-          providerConf.query +=  andSign +' _serviceProvider:"'+serviceProviderName+'"';
-        }else if(role =="publisher" && (providerConf[PROVIDER_NAME] == "operator" || providerConf[PROVIDER_NAME] == "batch")){
-          providerConf.query +=  andSign +' _serviceProvider:"'+serviceProvider+'"';
+        } else if (role == "serviceProvider" /*&& providerConf[PROVIDER_NAME] == "batch"*/) {
+            var serviceProviderName = user.username + "@" + user.domain;
+            providerConf.query += andSign + ' _serviceProvider:"' + serviceProviderName + '"';
+
+        } else if (role == "publisher" && (providerConf[PROVIDER_NAME] == "operator" || providerConf[PROVIDER_NAME] == "batch")) {
+            providerConf.query += andSign + ' _serviceProvider:"' + serviceProvider + '"';
         }
+        log.info("ProviderConf Query ==> " + providerConf.query);
         print(providerAPI.getData(providerConf));
 
         return;
-
-
     }
 
 }());

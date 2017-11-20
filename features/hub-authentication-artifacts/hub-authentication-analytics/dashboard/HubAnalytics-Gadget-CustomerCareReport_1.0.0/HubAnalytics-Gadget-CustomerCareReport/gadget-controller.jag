@@ -92,7 +92,7 @@
             providerConf.query =  createQuery(department, department, providerConf.query, "department");
         }
 
-        log.info("providerConf.query >> "+providerConf.query);
+        log.info("providerConf.query >> " + providerConf.query);
         var recordsFiltered=providerAPI.getRecordCount(providerConf);
 
         var resultPre = stringify( providerAPI.getDataBySearch(providerConf, start, length));
@@ -143,7 +143,6 @@
         } else if(loggedInUser.publisher_role && providerConf[PROVIDER_NAME] == "operator" ){
             providerConf.query =  createQuery(loggedInUser.username, loggedInUser.username, providerConf.query, "_serviceProvider");
         }
-
         print(providerAPI.getData(providerConf));
     }
 
@@ -156,9 +155,8 @@ function concatQuery(query, newQuery){
 
 function createQuery(provider, providerList, baseQuery, columnName) {
 
-    if( provider != null && provider != undefined && providerList != null && provider != "") {
-        if( (provider.toString().trim().toUpperCase() == 'ALL' || provider == 0)) {
-
+    if( provider != null && provider != undefined && providerList != null && stringify(provider) != "") {
+        if( (provider.toString().trim().toUpperCase() === "ALL") || (provider == 0)) {
             var operatorListText = "";
             for (var p in providerList){
                 operatorListText += providerList[p].toString().trim()+" ";
@@ -166,7 +164,6 @@ function createQuery(provider, providerList, baseQuery, columnName) {
             return concatQuery(baseQuery, columnName+": ("+operatorListText+")");
 
         }else {
-
             return concatQuery(baseQuery, columnName+": "+provider.toString().trim());
         }
     }

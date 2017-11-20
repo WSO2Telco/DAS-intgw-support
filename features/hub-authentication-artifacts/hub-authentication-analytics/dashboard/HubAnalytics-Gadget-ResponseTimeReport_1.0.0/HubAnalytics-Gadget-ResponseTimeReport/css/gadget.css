@@ -378,12 +378,16 @@ body.dark svg.marks .mark-group .background {
     left: 18px !important;
     background-color: #ffffff;
     box-shadow: 0 0.1em 0.25em rgba(0, 0, 0, 0.1), 0 0.1em 0.2em rgba(0, 0, 0, 0.1);
+    max-height:250px;
+    overflow:auto;
 }
 
 .dark .filterDiv .dropdown-menu {
     color:#ffffff;
     background-color: #999999;
     box-shadow: 0 0.1em 0.25em rgba(0, 0, 0, 0.1), 0 0.1em 0.2em rgba(0, 0, 0, 0.1);
+    max-height:250px;
+    overflow:auto;
 }
 
 .dark .filterDiv .dropdown-menu > li > a { color: #ffffff;}

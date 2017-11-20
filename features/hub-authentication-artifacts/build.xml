@@ -27,12 +27,7 @@
             <zipfileset dir="${PROCESSING_ARTIFACT_DIRECTORY}"/>
             <zipfileset dir="${ALL_ARTIFACT_LIST_DIRECTORY}"/>
         </zip>
-        <zip destfile="${resource-dir}/${ANALYTICS_HUB_DASHBOARD_capp}.car">
-            <zipfileset dir="${DASHBOARD_ARTIFACT_DIRECTORY}"/>
-        </zip>
-        <zip destfile="${resource-dir}/${ANALYTICS_HUB_PROCESSING_capp}.car">
-            <zipfileset dir="${PROCESSING_ARTIFACT_DIRECTORY}"/>
-        </zip>
+
     </target>
 
 </project>

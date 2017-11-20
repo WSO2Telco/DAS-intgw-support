@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Analytics>
-    <Name>Sparkscript-hubAnalytics-CommonStats</Name>
+    <Name>Sparkscript-hubAnalytics-CommonStats-DEPRECATED</Name>
     <Script>
 CREATE TEMPORARY TABLE ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS
       USING CarbonAnalytics
-      OPTIONS(tableName "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS");
+      OPTIONS(tableName "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS", incrementalParams "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS_PERDAY, DAY");
       
 CREATE TEMPORARY TABLE APISummary using CarbonAnalytics options (tableName "org_wso2telco_analytics_hub_stream_api_summary",
     schema "
@@ -39,22 +39,18 @@ CREATE TEMPORARY TABLE OperatorSummary using CarbonAnalytics options (tableName 
 INSERT INTO TABLE SPSummary SELECT serviceProvider, serviceProviderId FROM ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS
         GROUP BY serviceProvider, serviceProviderId;
 
-INCREMENTAL_TABLE_COMMIT SPSummary;
-
 INSERT INTO TABLE OperatorSummary SELECT operatorId, operatorName FROM ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS
         GROUP BY operatorId, operatorName;
-
-INCREMENTAL_TABLE_COMMIT OperatorSummary;
 
 INSERT INTO TABLE APISummary SELECT api,serviceProvider,applicationName,operatorId,
         apiPublisher, serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId
         FROM ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS GROUP BY api,serviceProvider,applicationName,operatorId,
         apiPublisher, serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;
 
-INCREMENTAL_TABLE_COMMIT APISummary;
+INCREMENTAL_TABLE_COMMIT ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS_PERDAY;
 
 </Script>
-    <CronExpression>0 0/5 * * * ?</CronExpression>
+    <CronExpression></CronExpression>
 </Analytics>
                       
                             

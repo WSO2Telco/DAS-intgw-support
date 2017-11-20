@@ -165,7 +165,7 @@
                          <br/>
                        <div class="row" id="showCSV">
                           <div class="col-xs-12">
-                            <div id="output"> </div>
+                            <div id="output" style="margin-left:auto; margin-right:auto ; height: 200px; overflow-y: scroll;overflow:auto;"> </div>
                           </div>
                         </div>
 
