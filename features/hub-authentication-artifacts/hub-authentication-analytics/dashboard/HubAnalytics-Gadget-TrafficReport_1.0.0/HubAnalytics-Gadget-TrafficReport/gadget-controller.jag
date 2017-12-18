@@ -34,7 +34,6 @@
     var action = request.getParameter("action");
     var filter = request.getParameter("filter");
     var data = request.getContent();
-    var providerConf = data[PROVIDER_CONF];
 
     var carbon = require('carbon');
     var user = session.get('user');
@@ -62,11 +61,13 @@
     }
 
     if (action === 'getSchema') {
-        log.info("providerConf[PROVIDER_NAME] => "+providerConf[PROVIDER_NAME]);
+        var providerConf = data[PROVIDER_CONF];
+
         var providerAPI = require('js/core/' + providerConf[PROVIDER_NAME] + '-provider-api.js');
         print(providerAPI.getSchema(providerConf));
         return;
     } else if(action === 'getData'){
+        var providerConf = data[PROVIDER_CONF];
         log.info("providerConf[PROVIDER_NAME] => "+providerConf[PROVIDER_NAME]);
         var providerAPI = require('js/core/' + providerConf[PROVIDER_NAME] + '-provider-api.js');
         providerConf.query = "";
@@ -165,11 +166,10 @@
         }
 
         if (action == "generateCSV") {
+            var providerConf = data[PROVIDER_CONF];
 
             var fileAppend = getFileAppend(data);
             var carbon = require('carbon');
-            //removeAllFiles(userReportDirectory, reportPrefix);
-
             var service = carbon.server.osgiService('org.wso2telco.analytics.hub.report.engine.ReportEngineService');
 
             var timeRangeUtil = Packages.org.wso2.analytics.shared.util.time.TimeRangeUtils;
@@ -245,6 +245,7 @@
             print(file.getStream());
 
         } else if (action == "remove" && request.getParameter("index") != null) {
+
             var file = new File(userReportDirectory);
             var result = file.listFiles()[request.getParameter("index")].del();
             print({"fileDeleted": result});
