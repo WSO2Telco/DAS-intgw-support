@@ -34,7 +34,6 @@
     var action = request.getParameter("action");
     var filter = request.getParameter("filter");
     var data = request.getContent();
-    var providerConf = data[PROVIDER_CONF];
 
     var carbon = require('carbon');
     var user = session.get('user');
@@ -42,7 +41,7 @@
     var tenantId = userRealmService.getTenantManager().getTenantId(user.domain);
     var userRealm = userRealmService.getTenantUserRealm(tenantId);
     var userStore = userRealm.getUserStoreManager();
-    var department = userStore.getUserClaimValue(user.username, 'http://wso2.org/claims/department', null);
+    var department = "sssss";
 
     var role = "";
     var serviceProvider = "";
@@ -62,11 +61,14 @@
     }
 
     if (action === 'getSchema') {
-        log.info("providerConf[PROVIDER_NAME] => "+providerConf[PROVIDER_NAME]);
+        var providerConf = data[PROVIDER_CONF];
+        //log.info("providerConf[PROVIDER_NAME] => "+providerConf[PROVIDER_NAME]);
+
         var providerAPI = require('js/core/' + providerConf[PROVIDER_NAME] + '-provider-api.js');
         print(providerAPI.getSchema(providerConf));
         return;
     } else if(action === 'getData'){
+        var providerConf = data[PROVIDER_CONF];
         log.info("providerConf[PROVIDER_NAME] => "+providerConf[PROVIDER_NAME]);
         var providerAPI = require('js/core/' + providerConf[PROVIDER_NAME] + '-provider-api.js');
         providerConf.query = "";
@@ -165,6 +167,7 @@
         }
 
         if (action == "generateCSV") {
+            var providerConf = data[PROVIDER_CONF];
 
             var fileAppend = getFileAppend(data);
             var carbon = require('carbon');
@@ -245,6 +248,15 @@
             print(file.getStream());
 
         } else if (action == "remove" && request.getParameter("index") != null) {
+
+            //log.info("*********************inside jag************************");
+            //var file = new File(userReportDirectory);
+            //var p = file.listFiles()[request.getParameter("index")];
+            //log.info("&&&&&&&&&&---------AFTER DELETION---------"+p.getName());
+            //var result = p.del();
+            //print({"fileDeleted": result});
+            //return;
+
             var file = new File(userReportDirectory);
             var result = file.listFiles()[request.getParameter("index")].del();
             print({"fileDeleted": result});
