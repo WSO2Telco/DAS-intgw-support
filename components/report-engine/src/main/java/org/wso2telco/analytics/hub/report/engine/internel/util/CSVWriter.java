@@ -82,7 +82,7 @@ public class CSVWriter {
             bufferedWriter.close();
         }
 
-    public static void writeTrafficCSV(List<Record> records, int bufSize, String filePath) throws IOException {
+    public static void writeTrafficCSV(List<Record> records, int bufSize, String filePath, String tableName) throws IOException {
 
         File file = new File(filePath);
         file.getParentFile().mkdirs();
@@ -96,10 +96,29 @@ public class CSVWriter {
             for (Record record : records) {
                 String key = record.getValues().get("api").toString();
                 if(apiCount.containsKey(key)) {
-                    count = apiCount.get(key) + Integer.parseInt(record.getValues().get("totalCount").toString());
+
+                    if(tableName.contains("ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_FAILURE_SUMMARY"))
+                    {
+                        count = apiCount.get(key) + Integer.parseInt(record.getValues().get("totalFailureCount").toString());
+                    }
+                    else
+                    {
+                        count = apiCount.get(key) + Integer.parseInt(record.getValues().get("totalCount").toString());
+                    }
+
+
                 }
                 else {
-                    count = Integer.parseInt(record.getValues().get("totalCount").toString());
+
+                    if(tableName.contains("ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_FAILURE_SUMMARY"))
+                    {
+                        count = Integer.parseInt(record.getValues().get("totalFailureCount").toString());
+                    }
+                    else
+                    {
+                        count = Integer.parseInt(record.getValues().get("totalCount").toString());
+                    }
+
                 }
                 apiCount.put(key, count);
              }

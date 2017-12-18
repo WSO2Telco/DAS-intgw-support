@@ -122,7 +122,7 @@ class ReportEngineGenerator implements Runnable {
         }
         try {
             if (reportType.equalsIgnoreCase("traffic")) {
-                CSVWriter.writeTrafficCSV(records, writeBufferLength, filePath);
+                CSVWriter.writeTrafficCSV(records, writeBufferLength, filePath,tableName);
             } else if (reportType.equalsIgnoreCase("transaction")) {
                 CSVWriter.writeTransactionCSV(records, writeBufferLength, filePath);
             }
