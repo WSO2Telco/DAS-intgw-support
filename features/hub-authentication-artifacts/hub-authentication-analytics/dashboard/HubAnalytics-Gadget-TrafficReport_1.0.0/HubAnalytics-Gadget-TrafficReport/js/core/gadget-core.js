@@ -62,7 +62,6 @@ $(function () {
     };
 
     var getProviderData = function (){
-
         if($("#button-type").val().toLowerCase().trim() == "error traffic") {
             conf["provider-conf"].tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_FAILURE_SUMMARY_PER_";
         } else {
@@ -186,11 +185,6 @@ $(function () {
         loadOperator();
         $("#generateCSV").hide();
         $("#showCSV").hide();
-
-        // loadSP();
-        // loadApp();
-        // loadApi();
-
         function loadOperator (){
             conf["provider-conf"]["tableName"] = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_OPERATOR_SUMMARY";
             conf["provider-conf"]["provider-name"] = "operator";
@@ -264,8 +258,6 @@ $(function () {
                     }
 
                     $("#dropdown-sp").html(spItems);
-
-                    //    $("#button-sp").text('All');
                     $("#button-sp").val('<li><a data-val="0" href="#">All Service Provider</a></li>');
                     $("#button-sp").append('&nbsp;<span class="caret"></span>');
                     loadApp(spIds);
@@ -274,8 +266,6 @@ $(function () {
                         $("#button-sp").text($(this).text());
                         $("#button-sp").append('&nbsp;<span class="caret"></span>');
                         $("#button-sp").val($(this).text());
-                        // var clickedSP = [];
-                        // clickedSP.push($(this).data('val'));
                         spIds = $(this).data('val');
                         serviceProviderId = spIds;
                         loadApp(spIds);
@@ -287,8 +277,6 @@ $(function () {
         }
 
         function loadApp (sps){
-            // alert(sps);
-            // if(sps)
             conf["provider-conf"]["tableName"] = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_API_SUMMARY";
             conf["provider-conf"]["provider-name"] = "sp";
             applicationId = 0;
@@ -318,8 +306,6 @@ $(function () {
                     $("#dropdown-app").html( $("#dropdown-app").html() + appItems);
                     $("#button-app").val('<li><a data-val="0" href="#">All Application</a></li>');
                     $("#button-app").append('&nbsp;<span class="caret"></span>');
-                    //  $("#button-app").text('All');
-                    // loadApp(sps[i]);
 
                     loadApi(apps);
 
@@ -328,8 +314,6 @@ $(function () {
                         $("#button-app").text($(this).text());
                         $("#button-app").append('&nbsp;<span class="caret"></span>');
                         $("#button-app").val($(this).text());
-                        // var clickedSP = [];
-                        // clickedSP.push($(this).data('val'));
                         apps = $(this).data('val');
                         applicationId = apps;
                         loadApi(apps);
@@ -351,7 +335,6 @@ $(function () {
                 contentType: "application/json",
                 async: false,
                 success: function (data) {
-                    // alert("loadApi :" +JSON.stringify(data));
 
                     $("#dropdown-api").empty();
                     $("#button-api").text('All Api');
@@ -369,8 +352,6 @@ $(function () {
                     $("#dropdown-api").html( $("#dropdown-api").html() + apiItems);
                     $("#button-api").val('<li><a data-val="0" href="#">All Api</a></li>');
                     $("#button-api").append('&nbsp;<span class="caret"></span>');
-                    //  $("#button-api").text('All');
-                    // loadApp(sps[i]);
                     $("#dropdown-api li a").click(function(){
                         $("#button-api").text($(this).text());
                         $("#button-api").append('&nbsp;<span class="caret"></span>');
