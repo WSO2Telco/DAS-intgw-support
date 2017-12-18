@@ -36,26 +36,18 @@ public class CarbonReportEngineService implements ReportEngineService {
 
     public void generateCSVReport(String tableName, String query, String reportName, int maxLength, String reportType) {
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-
         threadPoolExecutor.submit(new ReportEngineGenerator(tableName,query, maxLength, reportName, tenantId, reportType));
     }
 }
 
-
 class ReportEngineGenerator implements Runnable {
 
     private static final Log log = LogFactory.getLog(ReportEngineGenerator.class);
-
     private String tableName;
-
     private String query;
-
     private int maxLength;
-
     private String reportName;
-
     private int tenantId;
-
     private String reportType;
 
     public ReportEngineGenerator(String tableName, String query, int maxLength, String reportName, int tenantId, String reportType) {
@@ -70,7 +62,6 @@ class ReportEngineGenerator implements Runnable {
     @Override
     public void run() {
         try {
-
 
             int searchCount =  ReportEngineServiceHolder.getAnalyticsDataService()
                     .searchCount(tenantId, tableName, query);

@@ -24,7 +24,12 @@
     response.contentType = 'application/json';
     var PROVIDER_CONF = 'provider-conf';
     var PROVIDER_NAME = 'provider-name';
-    var FILE_NAME = FILE_NAMES.TRAFFIC_REPORT;
+    var FILE_NAME_PREFIX = FILE_NAMES.REPORT_PREFIX;
+    var FILE_NAME_KEY = FILE_NAMES.REPORT_KEY;
+    var FILE_NAME_ERROR = FILE_NAMES.REPORT_ERROR;
+
+    var FILE_NAME = FILE_NAME_PREFIX + FILE_NAME_KEY;
+    var FILE_NAME_TRAFFIC = FILE_NAME_PREFIX + FILE_NAME_ERROR + FILE_NAME_KEY;
 
     var action = request.getParameter("action");
     var filter = request.getParameter("filter");
@@ -117,21 +122,21 @@
         if((role != "admin" &&  all == false) || (providerConf[PROVIDER_NAME] == "batch")){
             andSign =  ' AND ';
         }
-        log.info("role => "+role+"    providerConf[PROVIDER_NAME] =>"+providerConf[PROVIDER_NAME] +"  "+(providerConf[PROVIDER_NAME] == "sp" || providerConf[PROVIDER_NAME] == "batch"));
+        log.info("role => " + role +" providerConf[PROVIDER_NAME] =>" + providerConf[PROVIDER_NAME] +"  "+(providerConf[PROVIDER_NAME] == "sp" || providerConf[PROVIDER_NAME] == "batch"));
 
-        if(role =="viewer" && providerConf[PROVIDER_NAME] != "batch" ){
+        if(role == "viewer" && providerConf[PROVIDER_NAME] != "batch" ){
             providerConf.tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_API_SUMMARY";
             providerConf.query +=  andSign +' department:"'+department+'"';
             print(providerAPI.getData(providerConf));
             return;
         }
-        else if(role =="viewer" && providerConf[PROVIDER_NAME] == "batch"){
-            providerConf.query +=  andSign +' department:"'+department+'"';
+        else if(role == "viewer" && providerConf[PROVIDER_NAME] == "batch"){
+            providerConf.query +=  andSign +' department:"' + department + '"';
 
 
         }else if(role =="serviceProvider" && (providerConf[PROVIDER_NAME] == "operator" || providerConf[PROVIDER_NAME] == "sp")){
             var serviceProviderName = user.username +"@"+ user.domain;
-            providerConf.query +=  andSign +' _serviceProvider:"'+serviceProviderName+'"';
+            providerConf.query +=  andSign +' _serviceProvider:"' + serviceProviderName + '"';
             providerConf.tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_API_SUMMARY";
             print(providerAPI.getData(providerConf));
             return;
@@ -141,7 +146,7 @@
             providerConf.query +=  andSign +' _serviceProvider:"'+serviceProviderName+'"';
 
         }else if(role =="publisher" && (providerConf[PROVIDER_NAME] == "operator" || providerConf[PROVIDER_NAME] == "batch")){
-            providerConf.query +=  andSign +' _serviceProvider:"'+serviceProvider+'"';
+            providerConf.query +=  andSign +' _serviceProvider:"'+serviceProvider + '"';
         }
         log.info("query === > " + providerConf.query);
         print(providerAPI.getData(providerConf));
@@ -152,36 +157,33 @@
 
         var userReportDirectory = "/reports/traffic/" + user.username + "/";;
         var directory = "repository/deployment/server/jaggeryapps/portal" + userReportDirectory;
-        var reportPrefix = user.username + FILE_NAME;
+        //var reportPrefix = user.username + FILE_NAME;
 
         if(role == ""){
             print({'message': 'Not Allowed!'});
             return;
         }
 
-
         if (action == "generateCSV") {
 
             var fileAppend = getFileAppend(data);
             var carbon = require('carbon');
             //removeAllFiles(userReportDirectory, reportPrefix);
-            var service = service = carbon.server.osgiService('org.wso2telco.analytics.hub.report.engine.ReportEngineService');
+
+            var service = carbon.server.osgiService('org.wso2telco.analytics.hub.report.engine.ReportEngineService');
 
             var timeRangeUtil = Packages.org.wso2.analytics.shared.util.time.TimeRangeUtils;
             var timeUnit = timeRangeUtil.getSuitableTimeRangeUnit(data.dateStart, data.dateEnd);
             timeUnit = (( timeUnit == 'MINUTE') || ( timeUnit == 'SECOND'))?'HOUR':timeUnit;
             var tableName = providerConf.tableName  + timeUnit;
-            providerConf.query += "eventTimeStamp:["+data.dateStart+" TO "+data.dateEnd+"]";
+            providerConf.query += "eventTimeStamp:[" + data.dateStart + " TO " + data.dateEnd + "]";
             providerConf.tableName = tableName;
 
             var reportMaxLength = 10;
 
-
             var providerConf = data[PROVIDER_CONF];
             var providerAPI = require('js/core/' + providerConf[PROVIDER_NAME] + '-provider-api.js');
             log.info('providerConf[PROVIDER_NAME] ' + providerConf[PROVIDER_NAME]);
-
-
 
             if (data.operator != "0" && data.operator != undefined) {
                 providerConf.query += " AND operatorId:'" + data.operator + "'";
@@ -204,9 +206,13 @@
             } else if (role == "serviceProvider") {
                 providerConf.query += ' AND serviceProvider:"' + serviceProvider + '"';
             }
+            var reportName;
+            if (providerConf.reportType == "error_traffic") {
+                reportName = directory + user.username + FILE_NAME_TRAFFIC + fileAppend;
+            } else if (providerConf.reportType == "success_traffic") {
+                reportName = directory + user.username + FILE_NAME + fileAppend;
+            }
 
-
-            var reportName = directory + user.username + FILE_NAME + fileAppend;
             var reportType = "traffic";
             service.generateCSVReport(tableName, providerConf.query, reportName, reportMaxLength, reportType);
             print({'message': 'Report is generating'});
@@ -214,7 +220,7 @@
 
             var files = [];
             for (var i = 0; i < file.listFiles().length; i++) {
-                if (!file.listFiles()[i].getName().search(user.username+ FILE_NAME)) {
+                if (!file.listFiles()[i].getName().search(user.username + FILE_NAME_PREFIX)) {
                     files[i] = {"name": file.listFiles()[i].getName(), "index": i};
                 }
             }
@@ -222,12 +228,10 @@
             return;
 
         } else if (action == "available") {
-
             var file = new File(userReportDirectory);
-
             var files = [];
             for (var i = 0; i < file.listFiles().length; i++) {
-                if (!file.listFiles()[i].getName().search(user.username+ FILE_NAME)) {
+                if (!file.listFiles()[i].getName().search(user.username + FILE_NAME_PREFIX)) {
                     files[i] = {"name": file.listFiles()[i].getName(), "index": i};
                 }
             }
@@ -247,7 +251,6 @@
             return;
         }
     }
-
 }());
 
 function removeAllFiles(userReportDirectory, reportPrefix1) {

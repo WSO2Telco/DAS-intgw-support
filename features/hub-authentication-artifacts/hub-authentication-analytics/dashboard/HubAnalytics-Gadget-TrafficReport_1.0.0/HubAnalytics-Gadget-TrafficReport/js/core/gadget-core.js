@@ -128,8 +128,10 @@ $(function () {
 
             if($("#button-type").val().toLowerCase().trim() == "error traffic") {
                 conf["provider-conf"].tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_FAILURE_SUMMARY_PER_";
+                conf["provider-conf"].reportType = "error_traffic";
             } else {
                 conf["provider-conf"].tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_TRAFFIC_SUMMARY_PER_";
+                conf["provider-conf"].reportType = "success_traffic";
             }
 
             $.ajax({
