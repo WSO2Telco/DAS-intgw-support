@@ -29,6 +29,10 @@ import java.util.*;
 
 public class CSVWriter {
 
+    public static final String TOTAL_COUNT = "totalCount";
+    public static final String TOTAL_FAILURE_COUNT = "totalFailureCount";
+    public static final String TABLE_NAME = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_FAILURE_SUMMARY";
+
     public static void writeTransactionCSV(List<Record> records, int bufSize, String filePath) throws IOException {
 
         File file = new File(filePath);
@@ -97,26 +101,26 @@ public class CSVWriter {
                 String key = record.getValues().get("api").toString();
                 if(apiCount.containsKey(key)) {
 
-                    if(tableName.contains("ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_FAILURE_SUMMARY"))
+                    if(tableName.contains(TABLE_NAME))
                     {
-                        count = apiCount.get(key) + Integer.parseInt(record.getValues().get("totalFailureCount").toString());
+                        count = apiCount.get(key) + Integer.parseInt(record.getValues().get(TOTAL_FAILURE_COUNT).toString());
                     }
                     else
                     {
-                        count = apiCount.get(key) + Integer.parseInt(record.getValues().get("totalCount").toString());
+                        count = apiCount.get(key) + Integer.parseInt(record.getValues().get(TOTAL_COUNT).toString());
                     }
 
 
                 }
                 else {
 
-                    if(tableName.contains("ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_FAILURE_SUMMARY"))
+                    if(tableName.contains(TABLE_NAME))
                     {
-                        count = Integer.parseInt(record.getValues().get("totalFailureCount").toString());
+                        count = Integer.parseInt(record.getValues().get(TOTAL_FAILURE_COUNT).toString());
                     }
                     else
                     {
-                        count = Integer.parseInt(record.getValues().get("totalCount").toString());
+                        count = Integer.parseInt(record.getValues().get(TOTAL_COUNT).toString());
                     }
 
                 }
