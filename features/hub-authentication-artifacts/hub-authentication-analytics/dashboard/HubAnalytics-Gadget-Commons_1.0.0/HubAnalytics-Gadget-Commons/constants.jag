@@ -7,7 +7,7 @@
     var BATCH = "batch";
     var FILE_NAMES = {TRANSACTION_REPORT:'transreport', REPORT_PREFIX:'-traffic-', REPORT_KEY:'report-', REPORT_ERROR:'error-',
 
-        TRAFFIC_REPORT:'-traffic-report-', TRAFFIC_REPORT_ERROR:'-traffic-error-report-'};
+        TRAFFIC_REPORT:'-traffic-report-', TRAFFIC_REPORT_ERROR:'-traffic-error-report-', TRANSACTION_REPORT_NAME:'-transaction-report-'};
     var METHOD = {GET:"GET", POST:"POST"};
     var CONTENT_TYPE = {APP_JSON : "application/json", APP_OCTSTREAM : "application/octet-stream"};
 %>

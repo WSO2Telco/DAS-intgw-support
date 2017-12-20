@@ -25,27 +25,24 @@
     var PROVIDER_CONF = 'provider-conf';
     var PROVIDER_NAME = 'provider-name';
     var FILE_NAME_PREFIX = FILE_NAMES.REPORT_PREFIX;
+    var FILE_NAME_REPORT = FILE_NAMES.TRAFFIC_REPORT;
     var FILE_NAME_KEY = FILE_NAMES.REPORT_KEY;
     var FILE_NAME_ERROR = FILE_NAMES.REPORT_ERROR;
-
+    var FILE_ERROR_NAME = FILE_NAMES.TRAFFIC_REPORT_ERROR;
     var FILE_NAME = FILE_NAME_PREFIX + FILE_NAME_KEY;
     var FILE_NAME_TRAFFIC = FILE_NAME_PREFIX + FILE_NAME_ERROR + FILE_NAME_KEY;
-
     var action = request.getParameter("action");
     var filter = request.getParameter("filter");
     var data = request.getContent();
-
     var carbon = require('carbon');
     var user = session.get('user');
     var userRealmService = carbon.server.osgiService('org.wso2.carbon.user.api.UserRealmService');
     var tenantId = userRealmService.getTenantManager().getTenantId(user.domain);
     var userRealm = userRealmService.getTenantUserRealm(tenantId);
     var userStore = userRealm.getUserStoreManager();
-    var department = userStore.getUserClaimValue(user.username, 'http://wso2.org/claims/department', null);
-
+    var department = "sss";
     var role = "";
     var serviceProvider = "";
-
     var log = new Log();
 
     for (var i =0; i < user.roles.length; i++) {
@@ -62,7 +59,6 @@
 
     if (action === 'getSchema') {
         var providerConf = data[PROVIDER_CONF];
-
         var providerAPI = require('js/core/' + providerConf[PROVIDER_NAME] + '-provider-api.js');
         print(providerAPI.getSchema(providerConf));
         return;
@@ -156,22 +152,29 @@
     }
     else if (user != null) {
 
-        var userReportDirectory = "/reports/traffic/" + user.username + "/";;
+        var userReportDirectory = "/reports/traffic/" + user.username + "/";
         var directory = "repository/deployment/server/jaggeryapps/portal" + userReportDirectory;
-        //var reportPrefix = user.username + FILE_NAME;
-
+        var reportPrefix = user.username + FILE_NAME;
+        var successReportPrefix = user.username + FILE_NAME_REPORT;
+        var errorReportPrefix = user.username + FILE_ERROR_NAME;
         if(role == ""){
             print({'message': 'Not Allowed!'});
             return;
         }
 
         if (action == "generateCSV") {
-            var providerConf = data[PROVIDER_CONF];
-
+            var fileFilterAppend = getFiltersForFileName(data);
             var fileAppend = getFileAppend(data);
+            var providerConf = data[PROVIDER_CONF];
             var carbon = require('carbon');
             var service = carbon.server.osgiService('org.wso2telco.analytics.hub.report.engine.ReportEngineService');
 
+            if(providerConf.reportType == "error_traffic") {
+                removeDuplicateFiles(userReportDirectory , (errorReportPrefix+fileFilterAppend));
+            }
+            else {
+                removeDuplicateFiles(userReportDirectory , (successReportPrefix+fileFilterAppend));
+            }
             var timeRangeUtil = Packages.org.wso2.analytics.shared.util.time.TimeRangeUtils;
             var timeUnit = timeRangeUtil.getSuitableTimeRangeUnit(data.dateStart, data.dateEnd);
             timeUnit = (( timeUnit == 'MINUTE') || ( timeUnit == 'SECOND'))?'HOUR':timeUnit;
@@ -254,13 +257,15 @@
     }
 }());
 
-function removeAllFiles(userReportDirectory, reportPrefix1) {
-    var file = new File(userReportDirectory);
-
-    for (var i = 0; i < file.listFiles().length; i++) {
-        if (!file.listFiles()[i].getName().search(reportPrefix1)) {
-            log.info("File " + file.listFiles()[i].getName() + " deleted.");
-            var result = file.listFiles()[i].del();
+function removeDuplicateFiles(userReportDirectory, reportPrefix1) {
+    var filedir = new File(userReportDirectory);
+    var fileList = filedir.listFiles();
+    var re = reportPrefix1+'(\\d+)';
+    for (var i = 0; i < fileList.length; i++) {
+        var file = fileList[i];
+        if (new RegExp(re,'g').test(file.getName())) {
+            log.info("File " + file.getName() + " deleted.");
+            var result = file.del();
         }
     }
 };
