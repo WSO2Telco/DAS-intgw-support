@@ -130,9 +130,9 @@
         }
         var reportPrefix = user.username + FILE_NAME;
         if (action == "generate") {
-
+            var fileFilterAppend = getFiltersForFileName(data);
             var fileAppend = getFileAppend(data);
-            //removeAllFiles(userReportDirectory, reportPrefix);
+            removeDuplicateFiles(userReportDirectory , (reportPrefix+fileFilterAppend));
             var carbon = require('carbon');
             var service = service = carbon.server.osgiService('org.wso2telco.analytics.hub.report.engine.ReportEngineService');
 
@@ -211,8 +211,19 @@ function removeAllFiles(userReportDirectory, reportPrefix1) {
         if (!file.listFiles()[i].getName().search(reportPrefix1)) {
             log.info("File " + file.listFiles()[i].getName() + " deleted.");
             var result = file.listFiles()[i].del();
-//log.info(result);
 
+        }
+    }
+};
+function removeDuplicateFiles(userReportDirectory, reportPrefix1) {
+    var filedir = new File(userReportDirectory);
+    var fileList = filedir.listFiles();
+    var re = reportPrefix1+'(\\d+)';
+    for (var i = 0; i < fileList.length; i++) {
+        var file = fileList[i];
+        if (new RegExp(re,'g').test(file.getName())) {
+            log.info("File " + file.getName() + " deleted.");
+            var result = file.del();
         }
     }
 };
