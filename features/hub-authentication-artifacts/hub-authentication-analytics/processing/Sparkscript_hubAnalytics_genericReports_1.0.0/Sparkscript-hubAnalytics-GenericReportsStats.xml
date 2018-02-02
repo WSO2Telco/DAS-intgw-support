@@ -47,11 +47,11 @@ CREATE TEMPORARY TABLE APIHourlyTrafficSummary using CarbonAnalytics options (ta
     );
     
 INSERT INTO TABLE APIHourlyTrafficSummary 
-	SELECT year,month,day,hour,cast(getHourStartingTime(year, month, day,hour) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,sum(totalCount) as totalCount,
-		serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId 
+	SELECT year,month,day,hour,cast(getHourStartingTime(year, month, day,hour) as STRING) as eventTimeStamp, first(api), first(serviceProvider), first(apiPublisher), first(applicationName), first(operatorId),isSuccess, first(msisdn),first(direction),sum(totalCount) as totalCount,
+		serviceProviderId,  first(operatorName), apiPublisherID, apiID, department, applicationId 
 	FROM ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS WHERE isSuccess =true 
-	GROUP BY year, month, day,hour,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;    
-   
+	GROUP BY year, month, day,hour,isSuccess,serviceProviderId, apiPublisherID, apiID, department, applicationId;
+	   
 CREATE TEMPORARY TABLE APIHourlyFailureSummary using CarbonAnalytics options (tableName "org_wso2telco_analytics_hub_stream_failure_summary_per_hour",
     schema "
     year INT -i, 
@@ -79,10 +79,11 @@ CREATE TEMPORARY TABLE APIHourlyFailureSummary using CarbonAnalytics options (ta
     ,incrementalParams "APIHourlyFailureSummary_DAY, DAY"
     );
 
-INSERT INTO TABLE APIHourlyFailureSummary SELECT year,month,day,hour,cast(getHourStartingTime(year, month, day,hour) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,errorMessageId,sum(totalCount) as totalFailureCount,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId FROM ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS WHERE isSuccess =false GROUP BY year, month, day,hour,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,errorMessageId,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;    
-    
+INSERT INTO TABLE APIHourlyFailureSummary SELECT year,month,day,hour,cast(getHourStartingTime(year, month, day,hour) as STRING) as eventTimeStamp, first(api), first(serviceProvider), first(apiPublisher), first(applicationName), first(operatorId),isSuccess, first(msisdn), first(direction),errorMessageId,sum(totalCount) as totalFailureCount,
+        serviceProviderId,  first(operatorName), apiPublisherID, apiID, department, applicationId FROM ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS WHERE isSuccess =false GROUP BY year, month, day,hour,isSuccess,serviceProviderId, apiPublisherID, apiID, department, applicationId,errorMessageId;
+        
+        
+            
 CREATE TEMPORARY TABLE APIHourlyResponseTimeSummary using CarbonAnalytics options (tableName "org_wso2telco_analytics_hub_stream_reponseTime_summary_per_hour",
     schema "
     year INT -i, 
@@ -110,10 +111,10 @@ CREATE TEMPORARY TABLE APIHourlyResponseTimeSummary using CarbonAnalytics option
     ,incrementalParams "APIHourlyResponseTimeSummary_DAY, DAY"
     );
 
-INSERT INTO TABLE APIHourlyResponseTimeSummary SELECT year,month,day,hour,cast(getHourStartingTime(year, month, day,hour) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,responseTimeRange,sum(totalCount) as totalResponseCount,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId FROM ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS WHERE isSuccess = true GROUP BY year, month, day,hour,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,responseTimeRange,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;    
-   
+INSERT INTO TABLE APIHourlyResponseTimeSummary SELECT year,month,day,hour,cast(getHourStartingTime(year, month, day,hour) as STRING) as eventTimeStamp, first(api), first(serviceProvider),  first(apiPublisher),  first(applicationName), first(operatorId),isSuccess, first(msisdn), first(direction),responseTimeRange,sum(totalCount) as totalResponseCount,
+        serviceProviderId, first(operatorName), apiPublisherID, apiID, department, applicationId FROM ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_PROCESSEDSTATISTICS WHERE isSuccess = true GROUP BY year, month, day,hour,isSuccess,serviceProviderId, apiPublisherID, apiID, department, applicationId,responseTimeRange; 
+        
+           
 INCREMENTAL_TABLE_COMMIT PROCESSEDSTATISTICS_SUMMARY_HOUR;    
       
 CREATE TEMPORARY TABLE APIDailyTrafficSummary using CarbonAnalytics options (tableName "org_wso2telco_analytics_hub_stream_traffic_summary_per_day",
@@ -140,9 +141,8 @@ CREATE TEMPORARY TABLE APIDailyTrafficSummary using CarbonAnalytics options (tab
     primaryKeys "year,month,day,eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction"
     );
     
-INSERT INTO TABLE APIDailyTrafficSummary SELECT year,month,day,cast(getDateStartingTime(year, month, day) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,SUM(totalCount),
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId FROM APIHourlyTrafficSummary GROUP BY year, month, day,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;
+INSERT INTO TABLE APIDailyTrafficSummary SELECT year,month,day,cast(getDateStartingTime(year, month, day) as STRING) as eventTimeStamp, first(api), first(serviceProvider), first(apiPublisher), first(applicationName),  first(operatorId),isSuccess, first(msisdn), first(direction),SUM(totalCount),
+        serviceProviderId,  first(operatorName), apiPublisherID, apiID, department, applicationId FROM APIHourlyTrafficSummary GROUP BY year, month, day,isSuccess, serviceProviderId, apiPublisherID, apiID, department, applicationId; 
 
 INCREMENTAL_TABLE_COMMIT APIHourlyTrafficSummary_DAY;
 
@@ -172,9 +172,8 @@ CREATE TEMPORARY TABLE APIDailyFailureSummary using CarbonAnalytics options (tab
     ,incrementalParams "APIHourlyTrafficSummary_DAY, DAY"
     );
 
-INSERT INTO TABLE APIDailyFailureSummary SELECT year,month,day,cast(getDateStartingTime(year, month, day) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,errorMessageId,SUM(totalFailureCount),
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId FROM APIHourlyFailureSummary GROUP BY year, month, day,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,errorMessageId,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;
+INSERT INTO TABLE APIDailyFailureSummary SELECT year,month,day,cast(getDateStartingTime(year, month, day) as STRING) as eventTimeStamp, first(api), first(serviceProvider), first(apiPublisher), first(applicationName), first(operatorId),isSuccess, first(msisdn), first(direction),errorMessageId,SUM(totalFailureCount),
+        serviceProviderId,  first(operatorName), apiPublisherID, apiID, department, applicationId FROM APIHourlyFailureSummary GROUP BY year, month, day,isSuccess,errorMessageId, serviceProviderId, apiPublisherID, apiID, department, applicationId;
 
 INCREMENTAL_TABLE_COMMIT APIHourlyFailureSummary_DAY;
 
@@ -203,9 +202,8 @@ CREATE TEMPORARY TABLE APIDailyResponseTimeSummary using CarbonAnalytics options
     primaryKeys "year,month,day,eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,,responseTimeRange"
     );
 
-INSERT INTO TABLE APIDailyResponseTimeSummary SELECT year,month,day,cast(getDateStartingTime(year, month, day) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,responseTimeRange, SUM(totalResponseCount),
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId FROM APIHourlyResponseTimeSummary GROUP BY year, month, day,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,responseTimeRange,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;
+INSERT INTO TABLE APIDailyResponseTimeSummary SELECT year,month,day,cast(getDateStartingTime(year, month, day) as STRING) as eventTimeStamp, first(api), first(serviceProvider), first(apiPublisher),  first(applicationName), first(operatorId),isSuccess, first(msisdn), first(direction),responseTimeRange, SUM(totalResponseCount),
+        serviceProviderId,  first(operatorName), apiPublisherID, apiID, department, applicationId FROM APIHourlyResponseTimeSummary GROUP BY year, month, day,isSuccess ,responseTimeRange, serviceProviderId, apiPublisherID, apiID, department, applicationId;
 
 INCREMENTAL_TABLE_COMMIT APIHourlyResponseTimeSummary_DAY;
 
@@ -231,9 +229,8 @@ INCREMENTAL_TABLE_COMMIT APIHourlyResponseTimeSummary_DAY;
     applicationId STRING -i",
     primaryKeys "year,month,eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction");
  
-INSERT INTO TABLE APIMonthlyTrafficSummary SELECT year,month,cast(getMonthStartingTime(year, month) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,SUM(totalCount),
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId FROM APIDailyTrafficSummary GROUP BY year, month,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;
+INSERT INTO TABLE APIMonthlyTrafficSummary SELECT year,month,cast(getMonthStartingTime(year, month) as STRING) as eventTimeStamp, first(api), first(serviceProvider), first(apiPublisher), first(applicationName), first(operatorId),isSuccess, first(msisdn), first(direction),SUM(totalCount),
+        serviceProviderId,  first(operatorName), apiPublisherID, apiID, department, applicationId FROM APIDailyTrafficSummary GROUP BY year, month,isSuccess,serviceProviderId, apiPublisherID, apiID, department, applicationId;
 
 CREATE TEMPORARY TABLE APIMonthlyFailureSummary using CarbonAnalytics options (tableName "org_wso2telco_analytics_hub_stream_failure_summary_per_month",
     schema "
@@ -259,9 +256,8 @@ CREATE TEMPORARY TABLE APIMonthlyFailureSummary using CarbonAnalytics options (t
     primaryKeys "year,month,eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,errorMessageId"
     );
 
-INSERT INTO TABLE APIMonthlyFailureSummary SELECT year,month,cast(getMonthStartingTime(year, month) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,errorMessageId,SUM(totalFailureCount),
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId FROM APIDailyFailureSummary GROUP BY year, month,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,errorMessageId,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;
+INSERT INTO TABLE APIMonthlyFailureSummary SELECT year,month,cast(getMonthStartingTime(year, month) as STRING) as eventTimeStamp, first(api), first(serviceProvider), first(apiPublisher), first(applicationName), first(operatorId),isSuccess, first(msisdn), first(direction),errorMessageId,SUM(totalFailureCount),
+        serviceProviderId,  first(operatorName), apiPublisherID, apiID, department, applicationId FROM APIDailyFailureSummary GROUP BY year, month,isSuccess,errorMessageId,serviceProviderId, apiPublisherID, apiID, department, applicationId;
 
 CREATE TEMPORARY TABLE APIMonthlyResponseTimeSummary using CarbonAnalytics options (tableName "org_wso2telco_analytics_hub_stream_reponseTime_summary_per_month",
     schema "
@@ -287,9 +283,8 @@ CREATE TEMPORARY TABLE APIMonthlyResponseTimeSummary using CarbonAnalytics optio
     primaryKeys "year,month,eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,,responseTimeRange"
     );
 
-INSERT INTO TABLE APIMonthlyResponseTimeSummary SELECT year,month,cast(getMonthStartingTime(year, month) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,responseTimeRange, SUM(totalResponseCount),
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId FROM APIDailyResponseTimeSummary GROUP BY year, month,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,responseTimeRange,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;
+INSERT INTO TABLE APIMonthlyResponseTimeSummary SELECT year,month,cast(getMonthStartingTime(year, month) as STRING) as eventTimeStamp, first(api),  first(serviceProvider), first(apiPublisher), first(applicationName), first(operatorId),isSuccess,  first(msisdn),  first(direction),responseTimeRange, SUM(totalResponseCount),
+        serviceProviderId,  first(operatorName), apiPublisherID, apiID, department, applicationId FROM APIDailyResponseTimeSummary GROUP BY year, month,isSuccess,responseTimeRange, serviceProviderId, apiPublisherID, apiID, department, applicationId;
 
 
 
@@ -314,9 +309,8 @@ INSERT INTO TABLE APIMonthlyResponseTimeSummary SELECT year,month,cast(getMonthS
     applicationId STRING -i",
     primaryKeys "year,eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction");
 
-INSERT INTO TABLE APIYearlyTrafficSummary SELECT year,cast(getMonthStartingTime(year, 1) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,SUM(totalCount),
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId FROM APIMonthlyTrafficSummary GROUP BY year,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;
+INSERT INTO TABLE APIYearlyTrafficSummary SELECT year,cast(getMonthStartingTime(year, 1) as STRING) as eventTimeStamp, first(api), first(serviceProvider), first(apiPublisher), first(applicationName), first(operatorId),isSuccess, first(msisdn), first(direction),SUM(totalCount),
+        serviceProviderId,  first(operatorName), apiPublisherID, apiID, department, applicationId FROM APIMonthlyTrafficSummary GROUP BY year,isSuccess, serviceProviderId, apiPublisherID, apiID, department, applicationId;
  
 CREATE TEMPORARY TABLE APIYearlyFailureSummary using CarbonAnalytics options (tableName "org_wso2telco_analytics_hub_stream_failure_summary_per_year",
     schema "
@@ -341,9 +335,8 @@ CREATE TEMPORARY TABLE APIYearlyFailureSummary using CarbonAnalytics options (ta
     primaryKeys "year,eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,errorMessageId"
     );
 
-INSERT INTO TABLE APIYearlyFailureSummary SELECT year,cast(getMonthStartingTime(year, 1) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,errorMessageId,SUM(totalFailureCount),
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId FROM APIMonthlyFailureSummary GROUP BY year,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,errorMessageId,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;
+INSERT INTO TABLE APIYearlyFailureSummary SELECT year,cast(getMonthStartingTime(year, 1) as STRING) as eventTimeStamp, first(api), first(serviceProvider), first(apiPublisher), first(applicationName), first(operatorId),isSuccess, first(msisdn), first(direction),errorMessageId,SUM(totalFailureCount),
+        serviceProviderId,  first(operatorName), apiPublisherID, apiID, department, applicationId FROM APIMonthlyFailureSummary GROUP BY year,isSuccess,errorMessageId, serviceProviderId, apiPublisherID, apiID, department, applicationId;
 
 CREATE TEMPORARY TABLE APIYearlyResponseTimeSummary using CarbonAnalytics options (tableName "org_wso2telco_analytics_hub_stream_reponseTime_summary_per_year",
     schema "
@@ -368,9 +361,8 @@ CREATE TEMPORARY TABLE APIYearlyResponseTimeSummary using CarbonAnalytics option
     primaryKeys "year,eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,,responseTimeRange"
     );
 
-INSERT INTO TABLE APIYearlyResponseTimeSummary SELECT year,cast(getMonthStartingTime(year, 1) as STRING) as eventTimeStamp,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,responseTimeRange, SUM(totalResponseCount),
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId FROM APIMonthlyResponseTimeSummary GROUP BY year,api,serviceProvider,apiPublisher,applicationName,operatorId,isSuccess,msisdn,direction,responseTimeRange,
-        serviceProviderId, operatorName, apiPublisherID, apiID, department, applicationId;
+INSERT INTO TABLE APIYearlyResponseTimeSummary SELECT year,cast(getMonthStartingTime(year, 1) as STRING) as eventTimeStamp, first(api),  first(serviceProvider),  first(apiPublisher),  first(applicationName),  first(operatorId),isSuccess,  first(msisdn), first(direction),responseTimeRange, SUM(totalResponseCount),
+        serviceProviderId,  first(operatorName), apiPublisherID, apiID, department, applicationId FROM APIMonthlyResponseTimeSummary GROUP BY year,isSuccess,responseTimeRange, serviceProviderId, apiPublisherID, apiID, department, applicationId;
 
 
 
@@ -421,7 +413,7 @@ INSERT INTO TABLE APISummary SELECT api,serviceProvider,applicationName,operator
 
                                                                                                                                                                                                                                                                                                                                                                                        
 </Script>
-    <CronExpression>0 0/15 * * * ?</CronExpression>
+    <CronExpression>0 0 0/2 1/1 * ? *</CronExpression>
 </Analytics>
   
       
