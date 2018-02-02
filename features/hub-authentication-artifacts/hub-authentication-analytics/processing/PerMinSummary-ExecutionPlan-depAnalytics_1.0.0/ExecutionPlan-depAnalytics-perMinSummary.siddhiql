@@ -14,30 +14,28 @@ define stream processedevnts (api string, resourcePath string, method string, re
 define stream minsummaryReal (api string, responseTime long , serviceProvider string, apiPublisher string, applicationName string, operatorId string, isSuccess bool, msisdn string, direction string, totalCount long, serviceProviderId string, errorMessageId string, responseTimeRange string, year int, month int, day int, hour int, min int, operatorName string, apiPublisherID string, apiID string, department string, applicationId string);
 
 
-from processedevnts
-select 
-
-api, responseTime , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction, serviceProviderId , errorMessageId, responseTimeRange , year , month , day , 
-hour, time:extract(responseTime, 'minute') as min, operatorName , apiPublisherID , apiID , department , applicationId 
-
-
-
+from processedevnts#window.externalTimeBatch(responseTime, 1 sec, 0, 10 sec, true)
+select api, responseTime , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction, serviceProviderId , errorMessageId, responseTimeRange , year , month , day , 
+hour, time:extract(responseTime, 'minute') as min, operatorName , apiPublisherID , apiID , department , applicationId, count() as totalCount group by isSuccess , serviceProviderId , errorMessageId, responseTimeRange , apiPublisherID , apiID , department , applicationId
 insert into processedevntsTemp;
 
-
-@info('Query01')
-from processedevntsTemp #window.cron('0 0/1 * 1/1 * ? *')
-select api, max(responseTime) as responseTime , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction , cast(count(api),'long') as totalCount , serviceProviderId , errorMessageId ,responseTimeRange , year , month , day , hour ,  min , operatorName , apiPublisherID , apiID , department , applicationId 
-group by api , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction, serviceProviderId , errorMessageId, responseTimeRange , year , month , day , hour, min ,operatorName , apiPublisherID , apiID , department , applicationId 
-insert into perSecondRequestsTemp;
+from processedevntsTemp
+select api, responseTime , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction, serviceProviderId , errorMessageId, responseTimeRange , year , month , day , 
+hour, min , time:extract(responseTime, 'second') as second, convert((responseTime - (responseTime % 1000)), 'string') as responseTimeUnique, operatorName , apiPublisherID , apiID , department , applicationId, totalCount
+insert into processedevntsSecTemp;
 
 
-from perSecondRequestsTemp#window.timeBatch(5 sec)
+from processedevntsSecTemp
+select str:concat(responseTimeUnique, '_', isSuccess, '_', serviceProviderId, '_', errorMessageId, 
+	'_', responseTimeRange, '_', apiPublisherID, '_', apiID, '_', department, '_', applicationId) as uniqueId, api, responseTime , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction, serviceProviderId , errorMessageId, responseTimeRange , year , month , day , 
+hour, min ,  second, operatorName , apiPublisherID , apiID , department , applicationId, totalCount
+insert into processedevntsSecTempWithUniqueId;
 
-select api, max(responseTime) as responseTime , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction , cast(count(api),'long') as totalCount , serviceProviderId , errorMessageId ,responseTimeRange , year , month , day , hour ,  min , operatorName , apiPublisherID , apiID , department , applicationId 
-group by api , serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction, serviceProviderId , errorMessageId, responseTimeRange , year , month , day , hour, min ,operatorName , apiPublisherID , apiID , department , applicationId 
+from processedevntsSecTempWithUniqueId#window.uniqueExternalTimeBatch(uniqueId, responseTime, 60 sec, 59999 millisec, 10 sec, true)
+select uniqueId, api, max(responseTime) as  responseTime, serviceProvider , apiPublisher , applicationName , operatorId , isSuccess , msisdn , direction, serviceProviderId , errorMessageId, responseTimeRange , operatorName , apiPublisherID , apiID , department , applicationId, sum(totalCount) as totalCount group by isSuccess , serviceProviderId , errorMessageId, responseTimeRange , apiPublisherID , apiID , department , applicationId
+insert into processedevntsMinTempWithUniqueId;
+
+
+from processedevntsSecTempWithUniqueId
+select api,  responseTime , serviceProvider, apiPublisher, applicationName, operatorId , isSuccess , "NOT_APPLICABLE" as msisdn, direction , totalCount , serviceProviderId , errorMessageId ,responseTimeRange , time:extract(responseTime, 'year') as year,    time:extract(responseTime, 'month') as month,  time:extract(responseTime, 'day') as day ,  time:extract(responseTime, 'hour') as hour ,  time:extract(responseTime, 'minute') as min , operatorName, apiPublisherID , apiID , department , applicationId 
 insert into minsummaryReal;
-
-from minsummaryReal
-#log('----------------nuwan  ----------04--------')
-insert into perSecondRequestsTemp4;
