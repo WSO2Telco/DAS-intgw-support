@@ -133,14 +133,21 @@
 
         }else if(role =="serviceProvider" && (providerConf[PROVIDER_NAME] == "operator" || providerConf[PROVIDER_NAME] == "sp")){
             var serviceProviderName = user.username +"@"+ user.domain;
-            providerConf.query +=  andSign +' _serviceProvider:"' + serviceProviderName + '"';
+            //providerConf.query +=  andSign +' _serviceProvider:"' + serviceProviderName + '"';
+            if(providerConf[PROVIDER_NAME] == "sp"){
+            providerConf.query +=  andSign +"serviceProviderId:"+ data.serviceProvider;
+            }
+            else{
+            providerConf.query +=  andSign +' _serviceProvider:"'+serviceProviderName+'"';
+            }
             providerConf.tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_API_SUMMARY";
             print(providerAPI.getData(providerConf));
             return;
 
         }else if(role =="serviceProvider"){
             var serviceProviderName = user.username +"@"+ user.domain;
-            providerConf.query +=  andSign +' _serviceProvider:"'+serviceProviderName+'"';
+            //providerConf.query +=  andSign +' _serviceProvider:"'+serviceProviderName+'"';
+            providerConf.query +=  andSign +"serviceProviderId:"+ data.serviceProvider;
 
         }else if(role =="publisher" && (providerConf[PROVIDER_NAME] == "operator" || providerConf[PROVIDER_NAME] == "batch")){
             providerConf.query +=  andSign +' _serviceProvider:"'+serviceProvider + '"';
