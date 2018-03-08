@@ -43,7 +43,7 @@
     var tenantId = userRealmService.getTenantManager().getTenantId(loggedInUser.domain);
     var userRealm = userRealmService.getTenantUserRealm(tenantId);
     var userStore = userRealm.getUserStoreManager();
-    var department = "aaaa";
+    var department = userStore.getUserClaimValue(loggedInUser.username.replace("@carbon.super",""), 'http://wso2.org/claims/department', null);
 
 
     if(action === 'getDataForTable'){
