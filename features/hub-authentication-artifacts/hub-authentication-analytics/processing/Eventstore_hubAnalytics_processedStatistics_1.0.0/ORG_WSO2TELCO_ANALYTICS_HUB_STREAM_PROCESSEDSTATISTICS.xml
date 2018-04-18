@@ -84,7 +84,7 @@
       <ColumnDefinition>
          <Name>msisdn</Name>
          <IsFacet>false</IsFacet>
-         <EnableIndexing>true</EnableIndexing>
+         <EnableIndexing>false</EnableIndexing>
          <IsPrimaryKey>false</IsPrimaryKey>
          <EnableScoreParam>false</EnableScoreParam>
          <Type>STRING</Type>
@@ -100,7 +100,7 @@
       <ColumnDefinition>
          <Name>jsonBody</Name>
          <IsFacet>false</IsFacet>
-         <EnableIndexing>true</EnableIndexing>
+         <EnableIndexing>false</EnableIndexing>
          <IsPrimaryKey>false</IsPrimaryKey>
          <EnableScoreParam>false</EnableScoreParam>
          <Type>STRING</Type>
@@ -188,7 +188,7 @@
       <ColumnDefinition>
          <Name>operatorName</Name>
          <IsFacet>false</IsFacet>
-         <EnableIndexing>false</EnableIndexing>
+         <EnableIndexing>true</EnableIndexing>
          <IsPrimaryKey>false</IsPrimaryKey>
          <EnableScoreParam>false</EnableScoreParam>
          <Type>STRING</Type>

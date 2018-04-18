@@ -7,21 +7,21 @@
 
 <ColumnDefinition>
 	<Name>meta_clientType</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>consumerKey</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>context</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
@@ -42,7 +42,7 @@
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>resourcePath</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
@@ -105,14 +105,14 @@
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>tenantDomain</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>hostName</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
@@ -140,21 +140,21 @@
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>cacheHit</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>BOOLEAN</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>responseSize</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>LONG</Type>
 </ColumnDefinition>
 <ColumnDefinition>
 	<Name>protocol</Name>
-	<EnableIndexing>true</EnableIndexing>
+	<EnableIndexing>false</EnableIndexing>
 	<IsPrimaryKey>false</IsPrimaryKey>
 	<EnableScoreParam>false</EnableScoreParam>
 	<Type>STRING</Type>
