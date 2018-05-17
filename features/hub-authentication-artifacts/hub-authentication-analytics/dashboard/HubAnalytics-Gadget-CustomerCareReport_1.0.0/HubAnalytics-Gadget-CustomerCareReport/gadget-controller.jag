@@ -127,22 +127,11 @@
             providerConf.query = createQuery(data.serviceProvider, data.spIds, providerConf.query, "serviceProviderId");
         }
 
-        if(roles.viewer_role && !loggedInUser.isAdmin){
-            providerConf.tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_API_SUMMARY";
-            providerConf.query =  createQuery(department, department, providerConf.query, "department");
-            print(providerAPI.getData(providerConf));
-            return;
-        } else if(loggedInUser.isServiceProvider && (providerConf[PROVIDER_NAME] == "operator" || providerConf[PROVIDER_NAME] == "sp")){
-            providerConf.query = createQuery(loggedInUser.username, loggedInUser.username, providerConf.query, "_serviceProvider");
-            providerConf.tableName = "ORG_WSO2TELCO_ANALYTICS_HUB_STREAM_API_SUMMARY";
-            print(providerAPI.getData(providerConf));
-            return;
-
-        } else if(loggedInUser.isServiceProvider){
-            providerConf.query =  createQuery(loggedInUser.username, loggedInUser.username, providerConf.query, "_serviceProvider");
-        } else if(loggedInUser.publisher_role && providerConf[PROVIDER_NAME] == "operator" ){
-            providerConf.query =  createQuery(loggedInUser.username, loggedInUser.username, providerConf.query, "_serviceProvider");
+        if (loggedInUser.isOperatorAdmin || loggedInUser.isCustomerCareUser ){
+            var operatorQuery = "operatorName:"+loggedInUser.operatorNameInProfile;
+            providerConf.query = concatQuery(providerConf.query, operatorQuery);
         }
+
         print(providerAPI.getData(providerConf));
     }
 
